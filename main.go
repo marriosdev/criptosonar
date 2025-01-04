@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os/exec"
+	"runtime"
 	"strings"
+	"time"
 
 	"github.com/manifoldco/promptui"
 	"github.com/marriosdev/criptosonar/criptos"
@@ -11,7 +14,8 @@ import (
 func main() {
 
 	for {
-		items := criptos.Cripto{}.GetCriptoList()
+
+		var items *criptos.Cripto
 
 		prompt := promptui.Select{
 			Label: "Qual cripto você quer?",
@@ -25,8 +29,32 @@ func main() {
 			return
 		}
 
-		cripto := criptos.Cripto{}.GetCriptoInfo(strings.ToLower(result))
+		for {
+			clearTerminal()
 
-		fmt.Println(cripto)
+			cripto := criptos.Cripto{}.GetCriptoInfo(strings.ToLower(result))
+			time.Sleep(5 * time.Second)
+			fmt.Println(cripto)
+		}
+	}
+}
+
+func clearTerminal() {
+	var cmd *exec.Cmd
+
+	fmt.Println(runtime.GOOS)
+
+	// Verifica o sistema operacional e executa o comando correspondente
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "cls") // Windows
+	default:
+		cmd = exec.Command("clear") // Unix/Linux
+	}
+
+	// Executa o comando
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println("Erro ao limpar o terminal:", err)
 	}
 }
